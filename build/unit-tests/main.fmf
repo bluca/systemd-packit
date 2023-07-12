@@ -1,6 +1,6 @@
 summary: Concise summary describing what the test does
 test: ./test.sh
 require:
-    - perl-IPC-SysV
-    - perl-Time-HiRes
+    - acl
+    - python3-pytest
     - systemd-tests
