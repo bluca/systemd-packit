@@ -7,7 +7,6 @@ prepare:
   - name: systemd
     how: install
     exclude:
-      - systemd-standalone-tmpfiles
-      - systemd-standalone-sysusers
+      - systemd-standalone-.*
 execute:
   how: tmt
