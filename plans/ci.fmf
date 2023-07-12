@@ -1,0 +1,13 @@
+# vi: sw=2 ts=2 et ft=yaml:
+
+summary: systemd Fedora test suite
+discover:
+  how: fmf
+prepare:
+  - name: systemd
+    how: install
+    exclude:
+      - systemd-standalone-tmpfiles
+      - systemd-standalone-sysusers
+execute:
+  how: tmt
