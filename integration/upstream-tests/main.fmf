@@ -6,7 +6,7 @@ require:
     - dhcp-client
     - dnsmasq
     - dosfstools
-    - e2fsprots
+    - e2fsprogs
     - elfutils
     - integritysetup
     - iscsi-initiator-utils
@@ -16,7 +16,7 @@ require:
     - mdadm
     - net-tools
     - nmap-ncat
-    - python3-pyexpect
+    - python3-pexpect
     - python3-pyparsing
     - python3-pytest
     - qemu-kvm
