@@ -3,6 +3,9 @@
 set -eux
 set -o pipefail
 
+# Switch SELinux to permissive, since the tests don't set proper contexts
+setenforce 0
+
 # Prepare systemd source tree
 #
 # Note: the snippet below assumes that the target PR branch is always 'main'
