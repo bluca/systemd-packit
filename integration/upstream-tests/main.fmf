@@ -29,6 +29,7 @@ require:
     - python3-pytest
     - qemu-kvm
     - quota
+    - screen
     - socat
     - squashfs-tools
     - swtpm
@@ -43,6 +44,7 @@ require:
     - util-linux
     - veritysetup
     - wget
+    - zstd
 recommend:
     - dnf-plugins-core
     - dnf5-plugins
