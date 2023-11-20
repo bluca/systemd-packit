@@ -8,6 +8,7 @@ require:
     - dosfstools
     - e2fsprogs
     - elfutils
+    - git-core
     - integritysetup
     - iscsi-initiator-utils
     - jq
