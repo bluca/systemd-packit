@@ -4,6 +4,7 @@ require:
     - acl
     - bind-utils
     - coreutils
+    - cryptsetup
     - dhcp-client
     - diffutils
     - dnf
