@@ -1,5 +1,6 @@
 summary: Run the upstream integration test suite
 test: ./test.sh
+duration: 2h
 require:
     - acl
     - attr
