@@ -6,6 +6,7 @@ require:
     - coreutils
     - dhcp-client
     - diffutils
+    - dnf
     - dnsmasq
     - dosfstools
     - e2fsprogs
@@ -40,6 +41,8 @@ require:
     - veritysetup
     - wget
 recommend:
+    - dnf-plugins-core
+    - dnf5-plugins
     - systemd-boot-unsigned
     - systemd-bootchart
     - systemd-journal-remote

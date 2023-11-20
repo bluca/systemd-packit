@@ -6,6 +6,10 @@ set -o pipefail
 # Switch SELinux to permissive, since the tests don't set proper contexts
 setenforce 0
 
+# Install systemd's build dependencies, as some of the integration tests setup stuff
+# requires pkg-config files
+dnf builddep -y systemd
+
 # Prepare systemd source tree
 #
 # Note: the snippet below assumes that the target PR branch is always 'main'
