@@ -2,6 +2,7 @@ summary: Run the upstream integration test suite
 test: ./test.sh
 require:
     - acl
+    - attr
     - bind-utils
     - coreutils
     - cryptsetup
