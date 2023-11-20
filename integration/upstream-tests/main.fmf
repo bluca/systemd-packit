@@ -3,11 +3,14 @@ test: ./test.sh
 require:
     - acl
     - bind-utils
+    - coreutils
     - dhcp-client
+    - diffutils
     - dnsmasq
     - dosfstools
     - e2fsprogs
     - elfutils
+    - findutils
     - git-core
     - integritysetup
     - iscsi-initiator-utils
@@ -33,6 +36,7 @@ require:
     - systemd-udev
     - time
     - tpm2-tools
+    - util-linux
     - veritysetup
     - wget
 recommend:
