@@ -41,6 +41,7 @@ require:
     - systemd-pam
     - systemd-tests
     - systemd-udev
+    - systemd-ukify
     - time
     - tpm2-tools
     - util-linux
@@ -51,7 +52,6 @@ recommend:
     - dnf-plugins-core
     - dnf5-plugins
     - systemd-boot-unsigned
-    - systemd-bootchart
     - systemd-journal-remote
     - systemd-networkd
     - systemd-oom-defaults
