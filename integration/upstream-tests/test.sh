@@ -3,28 +3,45 @@
 set -eux
 set -o pipefail
 
+WORKDIR="$(mktemp -d)"
+pushd "$WORKDIR"
+
 # Switch SELinux to permissive, since the tests don't set proper contexts
 setenforce 0
 
-# Install systemd's build dependencies, as some of the integration tests setup stuff
-# requires pkg-config files
-dnf builddep -y systemd
-
 # Prepare systemd source tree
-#
-# Note: the snippet below assumes that the target PR branch is always 'main'
-#
-# Relevant docs:
-#   - https://packit.dev/docs/configuration/upstream/tests#optional-parameters
-git clone "${PACKIT_TARGET_URL:-https://github.com/systemd/systemd}" systemd
-cd systemd
-# If we're running in a pull request job, merge the remote branch into the current main
-if [[ -n "${PACKIT_SOURCE_URL:-}" ]]; then
-    git remote add pr "${PACKIT_SOURCE_URL:?}"
-    git fetch pr "${PACKIT_SOURCE_BRANCH:?}"
-    git merge "pr/$PACKIT_SOURCE_BRANCH"
+if [[ -n "${PACKIT_TARGET_URL:-}" ]]; then
+    # Install systemd's build dependencies, as some of the integration tests setup stuff
+    # requires pkg-config files
+    dnf builddep -y systemd
+    # If we're running in a pull request job, merge the remote branch into the current main
+    git clone "$PACKIT_TARGET_URL" systemd
+    cd systemd
+    if [[ -n "${PACKIT_SOURCE_URL:-}" ]]; then
+        git remote add pr "${PACKIT_SOURCE_URL:?}"
+        git fetch pr "${PACKIT_SOURCE_BRANCH:?}"
+        git merge "pr/$PACKIT_SOURCE_BRANCH"
+    fi
+    git log -1
+else
+    # If we're running outside of Packit, download SRPM for the currently installed build
+    dnf download --source "$(rpm -q systemd)"
+    dnf builddep -y ./systemd-*.src.rpm
+    rpmbuild --nodeps --define="_topdir $PWD" -rp ./systemd-*.src.rpm
+    # Little hack to get to the correct directory without having to figure out
+    # the exact name
+    cd BUILD/*/test/../
+
+    # NO_BUILD=1 support for Fedora was introduced in v255
+    if ! grep -q "LOOKS_LIKE_FEDORA" test/test-functions; then
+        # Try to apply necessary patches before giving up completely
+        if ! curl -Ls https://github.com/systemd/systemd/commit/b54bc139ae91b417996ddc85585710ebf3324237.patch | git apply ||
+           ! curl -Ls https://github.com/systemd/systemd/commit/8ddbd9e07811e434fb24bc0d04812aae24fa78be.patch | git apply; then
+            echo "Source tree doesn't support NO_BUILD=1 on Fedora, skipping the tests"
+            exit 0
+        fi
+    fi
 fi
-git log -1
 
 export ARTIFACT_DIRECTORY="${TMT_TEST_DATA:?}"
 export TEST_SAVE_JOURNAL=fail
@@ -38,3 +55,6 @@ export NSPAWN_TIMEOUT=1200
 export TEST_NO_QEMU=1
 
 test/run-integration-tests.sh
+
+popd
+rm -rf "$WORKDIR"

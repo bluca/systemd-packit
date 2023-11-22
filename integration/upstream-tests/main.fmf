@@ -7,6 +7,7 @@ require:
     - bind-utils
     - coreutils
     - cryptsetup
+    - curl
     - dhcp-client
     - diffutils
     - dnf
@@ -29,6 +30,7 @@ require:
     - python3-pytest
     - qemu-kvm
     - quota
+    - rpm-build
     - screen
     - socat
     - squashfs-tools
