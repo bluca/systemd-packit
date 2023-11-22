@@ -6,6 +6,10 @@ set -o pipefail
 WORKDIR="$(mktemp -d)"
 pushd "$WORKDIR"
 
+# Workaround for https://gitlab.com/testing-farm/oculus/-/issues/19
+# shellcheck disable=SC2064
+trap "chmod -R o+rX $TMT_TEST_DATA" EXIT
+
 # Switch SELinux to permissive, since the tests don't set proper contexts
 setenforce 0
 
