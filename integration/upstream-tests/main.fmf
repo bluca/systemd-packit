@@ -35,6 +35,7 @@ require:
     - socat
     - squashfs-tools
     - strace
+    - stress
     - swtpm
     - systemd
     - systemd-container
