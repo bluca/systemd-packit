@@ -26,6 +26,7 @@ require:
     - mdadm
     - net-tools
     - nmap-ncat
+    - nvme-cli
     - python3-pexpect
     - python3-pyparsing
     - python3-pytest
