@@ -18,9 +18,10 @@ if [[ -n "${PACKIT_TARGET_URL:-}" ]]; then
     # Install systemd's build dependencies, as some of the integration tests setup stuff
     # requires pkg-config files
     dnf builddep -y systemd
-    # If we're running in a pull request job, merge the remote branch into the current main
     git clone "$PACKIT_TARGET_URL" systemd
     cd systemd
+    git checkout "$PACKIT_TARGET_BRANCH"
+    # If we're running in a pull request job, merge the remote branch into the current main
     if [[ -n "${PACKIT_SOURCE_URL:-}" ]]; then
         git remote add pr "${PACKIT_SOURCE_URL:?}"
         git fetch pr "${PACKIT_SOURCE_BRANCH:?}"
