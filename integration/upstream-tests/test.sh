@@ -29,7 +29,10 @@ if [[ -n "${PACKIT_TARGET_URL:-}" ]]; then
     git log -1
 else
     # If we're running outside of Packit, download SRPM for the currently installed build
-    dnf download --source "$(rpm -q systemd)"
+    if ! dnf download --source "$(rpm -q systemd)"; then
+        # If the build is recent enough it might not be on the mirrors yet, so try koji as well
+        koji download-build --arch=src "$(rpm -q systemd --qf "%{sourcerpm}")"
+    fi
     dnf builddep -y ./systemd-*.src.rpm
     rpmbuild --nodeps --define="_topdir $PWD" -rp ./systemd-*.src.rpm
     # Little hack to get to the correct directory without having to figure out

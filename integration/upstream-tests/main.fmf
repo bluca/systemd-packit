@@ -20,6 +20,7 @@ require:
     - integritysetup
     - iscsi-initiator-utils
     - jq
+    - koji
     - lvm2
     - make
     - mdadm
