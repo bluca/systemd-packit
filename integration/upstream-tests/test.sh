@@ -51,6 +51,10 @@ else
     fi
 fi
 
+export DENY_LIST_MARKERS=fedora-skip
+# Temporarily skip TEST-25-IMPORT, see https://github.com/systemd/systemd/issues/30250
+touch test/TEST-25-IMPORT/fedora-skip
+
 export ARTIFACT_DIRECTORY="${TMT_TEST_DATA:?}"
 export TEST_SAVE_JOURNAL=fail
 export TEST_SHOW_JOURNAL=warning
