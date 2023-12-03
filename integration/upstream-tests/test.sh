@@ -52,6 +52,10 @@ else
 fi
 
 export DENY_LIST_MARKERS=fedora-skip
+# Skip TEST-64-UDEV-STORAGE for now, as it takes a really long time without KVM
+touch test/TEST-64-UDEV-STORAGE/fedora-skip
+# Temporarily skip TEST-13-NSPAWN until https://github.com/systemd/systemd/issues/30157 is resolved
+touch test/TEST-13-NSPAWN/fedora-skip
 # Temporarily skip TEST-25-IMPORT, see https://github.com/systemd/systemd/issues/30250
 touch test/TEST-25-IMPORT/fedora-skip
 
@@ -60,11 +64,10 @@ export TEST_SAVE_JOURNAL=fail
 export TEST_SHOW_JOURNAL=warning
 export TEST_REQUIRE_INSTALL_TESTS=0
 export TEST_PREFER_NSPAWN=1
+export TEST_NESTED_KVM=1
 export NO_BUILD=1
 export QEMU_TIMEOUT=1800
 export NSPAWN_TIMEOUT=1200
-# FIXME
-export TEST_NO_QEMU=1
 
 test/run-integration-tests.sh
 
