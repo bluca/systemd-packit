@@ -56,8 +56,6 @@ export DENY_LIST_MARKERS=fedora-skip
 touch test/TEST-64-UDEV-STORAGE/fedora-skip
 # Temporarily skip TEST-13-NSPAWN until https://github.com/systemd/systemd/issues/30157 is resolved
 touch test/TEST-13-NSPAWN/fedora-skip
-# Temporarily skip TEST-25-IMPORT, see https://github.com/systemd/systemd/issues/30250
-touch test/TEST-25-IMPORT/fedora-skip
 
 export ARTIFACT_DIRECTORY="${TMT_TEST_DATA:?}"
 export TEST_SAVE_JOURNAL=fail
