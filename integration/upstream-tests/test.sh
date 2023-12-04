@@ -27,7 +27,7 @@ if [[ -n "${PACKIT_TARGET_URL:-}" ]]; then
         git fetch pr "${PACKIT_SOURCE_BRANCH:?}"
         git merge "pr/$PACKIT_SOURCE_BRANCH"
     fi
-    git log -1
+    git log --oneline -5
 else
     # If we're running outside of Packit, download SRPM for the currently installed build
     if ! dnf download --source "$(rpm -q systemd)"; then
