@@ -20,6 +20,8 @@ require:
     - integritysetup
     - iscsi-initiator-utils
     - jq
+    - knot
+    - knot-dnssecutils
     - koji
     - lvm2
     - make
