@@ -10,6 +10,15 @@ pushd "$WORKDIR"
 # shellcheck disable=SC2064
 trap "chmod -R o+rX $TMT_TEST_DATA" EXIT
 
+if [[ "${TMT_REBOOT_COUNT:?}" -eq 0 ]]; then
+    # Temporary workaround for a borked 6.8 kernel
+    koji download-build --arch=x86_64 kernel-6.7.0-68.fc40
+    rm -f ./kernel-*debug*.rpm
+    dnf -y install ./kernel*.rpm
+    grubby --set-default /boot/vmlinuz-6.7.0-68.fc40.x86_64
+    tmt-reboot
+fi
+
 # Switch SELinux to permissive, since the tests don't set proper contexts
 setenforce 0
 
