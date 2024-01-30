@@ -17,7 +17,7 @@ setenforce 0
 if [[ -n "${PACKIT_TARGET_URL:-}" ]]; then
     # Install systemd's build dependencies, as some of the integration tests setup stuff
     # requires pkg-config files
-    dnf builddep -y systemd
+    dnf builddep --allowerasing -y systemd
     git clone "$PACKIT_TARGET_URL" systemd
     cd systemd
     git checkout "$PACKIT_TARGET_BRANCH"
@@ -34,7 +34,7 @@ else
         # If the build is recent enough it might not be on the mirrors yet, so try koji as well
         koji download-build --arch=src "$(rpm -q systemd --qf "%{sourcerpm}")"
     fi
-    dnf builddep -y ./systemd-*.src.rpm
+    dnf builddep --allowerasing -y ./systemd-*.src.rpm
     rpmbuild --nodeps --define="_topdir $PWD" -rp ./systemd-*.src.rpm
     # Little hack to get to the correct directory without having to figure out
     # the exact name
