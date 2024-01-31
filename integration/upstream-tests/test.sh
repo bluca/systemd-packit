@@ -51,6 +51,13 @@ else
     fi
 fi
 
+# Temporarily build custom initrd with libkmod installed explicitly, as it became
+# a dlopen() dep
+# See: https://github.com/systemd/systemd/pull/31131
+export INITRD="$(mktemp /var/tmp/ci-XXX.initrd)"
+cp -fv "/boot/initramfs-$(uname -r).img" "$INITRD"
+dracut -f -v -a crypt --install /usr/lib64/libkmod.so.2 --rebuild "$INITRD"
+
 export DENY_LIST_MARKERS=fedora-skip
 # Skip TEST-64-UDEV-STORAGE for now, as it takes a really long time without KVM
 touch test/TEST-64-UDEV-STORAGE/fedora-skip
