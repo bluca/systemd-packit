@@ -55,7 +55,7 @@ fi
 TMPDIR="$(mktemp -d)"
 pushd "$TMPDIR"
 koji download-build --arch x86_64 --arch noarch util-linux-2.39.3-4.fc40
-dnf downgrade ./*.rpm
+dnf -y downgrade ./*.rpm
 popd
 rm -rf "$TMPDIR"
 
