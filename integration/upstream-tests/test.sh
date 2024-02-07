@@ -51,6 +51,14 @@ else
     fi
 fi
 
+# Temporarily downgrade to older util-linux (because of failing setpriv)
+TMPDIR="$(mktemp -d)"
+pushd "$TMPDIR"
+koji download-build --arch x86_64 --arch noarch util-linux-2.39.3-4.fc40
+dnf downgrade ./*.rpm
+popd
+rm -rf "$TMPDIR"
+
 # Temporarily build custom initrd with libkmod installed explicitly, as it became
 # a dlopen() dep
 # See: https://github.com/systemd/systemd/pull/31131
