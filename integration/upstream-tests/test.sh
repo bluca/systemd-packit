@@ -79,9 +79,6 @@ export TEST_NESTED_KVM=1
 export NO_BUILD=1
 export QEMU_TIMEOUT=1800
 export NSPAWN_TIMEOUT=1200
-# FIXME: temporarily override the default log level from debug to info to work around
-#        https://github.com/systemd/systemd/issues/30886
-export KERNEL_APPEND="systemd.log_level=info"
 
 test/run-integration-tests.sh
 
