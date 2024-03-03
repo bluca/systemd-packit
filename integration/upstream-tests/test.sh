@@ -58,6 +58,34 @@ export INITRD="$(mktemp /var/tmp/ci-XXX.initrd)"
 cp -fv "/boot/initramfs-$(uname -r).img" "$INITRD"
 dracut -f -v -a crypt --install /usr/lib64/libkmod.so.2 --rebuild "$INITRD"
 
+# Work around https://github.com/util-linux/util-linux/issues/2824
+if grep -q "losetup --find" /usr/lib/systemd/tests/testdata/units/testsuite-72.sh; then
+    patch /usr/lib/systemd/tests/testdata/units/testsuite-72.sh <<\EOF
+diff --git a/test/units/testsuite-72.sh b/test/units/testsuite-72.sh
+index 953f2a16bf..312a53def1 100755
+--- a/test/units/testsuite-72.sh
++++ b/test/units/testsuite-72.sh
+@@ -22,7 +22,7 @@ fi
+ # change the sector size of a file, and we want to test both 512 and 4096 byte
+ # sectors. If loopback devices are not supported, we can only test one sector
+ # size, and the underlying device is likely to have a sector size of 512 bytes.
+-if ! losetup --find >/dev/null 2>&1; then
++if [[ ! -e /dev/loop-control ]] then
+     echo "No loopback device support"
+     SECTOR_SIZES="512"
+ fi
+@@ -108,7 +108,7 @@ for sector_size in $SECTOR_SIZES ; do
+     rm -f "$BACKING_FILE"
+     truncate -s "$disk_size" "$BACKING_FILE"
+ 
+-    if losetup --find >/dev/null 2>&1; then
++    if [[ -e /dev/loop-control ]]; then
+         # shellcheck disable=SC2086
+         blockdev="$(losetup --find --show --sector-size $sector_size $BACKING_FILE)"
+     else
+EOF
+fi
+
 export DENY_LIST_MARKERS=fedora-skip
 # Skip TEST-64-UDEV-STORAGE for now, as it takes a really long time without KVM
 touch test/TEST-64-UDEV-STORAGE/fedora-skip
