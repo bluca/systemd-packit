@@ -35,6 +35,7 @@ require:
     - python3-pyparsing
     - python3-pytest
     - qemu-kvm
+    - qemu-system-aarch64
     - quota
     - rpm-build
     - screen
