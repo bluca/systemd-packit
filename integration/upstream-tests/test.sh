@@ -91,6 +91,7 @@ export DENY_LIST_MARKERS=fedora-skip
 touch test/TEST-64-UDEV-STORAGE/fedora-skip
 
 export ARTIFACT_DIRECTORY="${TMT_TEST_DATA:?}"
+export SPLIT_TEST_LOGS=1
 export TEST_SAVE_JOURNAL=fail
 export TEST_SHOW_JOURNAL=warning
 export TEST_REQUIRE_INSTALL_TESTS=0
