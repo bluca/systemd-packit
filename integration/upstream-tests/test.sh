@@ -59,7 +59,7 @@ cp -fv "/boot/initramfs-$(uname -r).img" "$INITRD"
 dracut -f -v -a crypt --install /usr/lib64/libkmod.so.2 --rebuild "$INITRD"
 
 # Work around https://github.com/util-linux/util-linux/issues/2824
-if grep -q "losetup --find" /usr/lib/systemd/tests/testdata/units/testsuite-72.sh; then
+if grep -qF "losetup --find >" /usr/lib/systemd/tests/testdata/units/testsuite-72.sh; then
     patch /usr/lib/systemd/tests/testdata/units/testsuite-72.sh <<\EOF
 diff --git a/test/units/testsuite-72.sh b/test/units/testsuite-72.sh
 index 953f2a16bf..312a53def1 100755
