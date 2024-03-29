@@ -30,7 +30,6 @@ require:
     - net-tools
     - nmap-ncat
     - nvme-cli
-    - patch
     - python3-pexpect
     - python3-pyparsing
     - python3-pytest
