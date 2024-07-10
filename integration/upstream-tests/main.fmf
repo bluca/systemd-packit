@@ -42,6 +42,7 @@ require:
     - squashfs-tools
     - strace
     - stress
+    - stress-ng
     - swtpm
     - systemd
     - systemd-container
