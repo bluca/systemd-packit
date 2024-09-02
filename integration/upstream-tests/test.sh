@@ -61,6 +61,9 @@ dracut -f -v -a crypt --install /usr/lib64/libkmod.so.2 --rebuild "$INITRD"
 export DENY_LIST_MARKERS=fedora-skip
 # Skip TEST-64-UDEV-STORAGE for now, as it takes a really long time without KVM
 touch test/TEST-64-UDEV-STORAGE/fedora-skip
+# FIXME: screen 5.0.0 is FUBAR and break this test, re-enable once the issue is fixed
+# See: https://bugzilla.redhat.com/show_bug.cgi?id=2309284
+touch test/TEST-69-SHUTDOWN/fedora-skip
 
 export ARTIFACT_DIRECTORY="${TMT_TEST_DATA:?}"
 export SPLIT_TEST_LOGS=1
