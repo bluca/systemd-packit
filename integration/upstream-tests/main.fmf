@@ -2,67 +2,38 @@ summary: Run the upstream integration test suite
 test: ./test.sh
 duration: 2h
 require:
-    - acl
-    - attr
-    - bind-utils
     - coreutils
-    - cryptsetup
-    - curl
-    - dhcp-client
-    - diffutils
+    - distribution-gpg-keys
     - dnf
     - dnsmasq
     - dosfstools
     - e2fsprogs
     - elfutils
     - findutils
+    - gcc
     - git-core
+    - gperf
     - integritysetup
-    - iscsi-initiator-utils
-    - jq
-    - knot
-    - knot-dnssecutils
+    - libcap-devel
+    - libmount-devel
     - koji
-    - libarchive-devel
-    - lvm2
-    - make
-    - mdadm
-    - net-tools
-    - nmap-ncat
-    - nvme-cli
-    - python3-pexpect
-    - python3-pyparsing
+    - meson
+    - python3-jinja2
     - python3-pytest
     - qemu-kvm
     - qemu-system-aarch64
-    - quota
     - rpm-build
-    - screen
-    - socat
     - squashfs-tools
     - strace
-    - stress
-    - stress-ng
     - swtpm
-    - systemd
+    - swtpm-tools
     - systemd-container
-    - systemd-libs
-    - systemd-pam
-    - systemd-tests
     - systemd-udev
     - systemd-ukify
-    - time
     - tpm2-tools
     - util-linux
-    - util-linux-script
-    - veritysetup
-    - wget
     - zstd
 recommend:
     - dnf-plugins-core
     - dnf5-plugins
-    - systemd-boot-unsigned
     - systemd-journal-remote
-    - systemd-networkd
-    - systemd-oom-defaults
-    - systemd-resolved

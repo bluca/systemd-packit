@@ -3,12 +3,25 @@
 set -eux
 set -o pipefail
 
-WORKDIR="$(mktemp -d)"
+WORKDIR="$(mktemp --directory --tmpdir=/var/tmp)"
 pushd "$WORKDIR"
+
+cleanup () {
+    if [ -f "${WORKDIR}/systemd/build/meson-logs/testlog.txt" ]; then
+        cp "${WORKDIR}/systemd/build/meson-logs/testlog.txt" "$TMT_TEST_DATA"
+    fi
+    if [ -d "${WORKDIR}/systemd/build/test/journal" ]; then
+        cp -r "${WORKDIR}/systemd/build/test/journal" "$TMT_TEST_DATA"
+    fi
+
+    chmod -R o+rX "$TMT_TEST_DATA"
+
+    rm -rf "$WORKDIR"
+}
 
 # Workaround for https://gitlab.com/testing-farm/oculus/-/issues/19
 # shellcheck disable=SC2064
-trap "chmod -R o+rX $TMT_TEST_DATA" EXIT
+trap cleanup EXIT
 
 # Switch SELinux to permissive, since the tests don't set proper contexts
 setenforce 0
@@ -17,7 +30,6 @@ setenforce 0
 if [[ -n "${PACKIT_TARGET_URL:-}" ]]; then
     # Install systemd's build dependencies, as some of the integration tests setup stuff
     # requires pkg-config files
-    dnf builddep --allowerasing -y systemd
     git clone "$PACKIT_TARGET_URL" systemd
     cd systemd
     git checkout "$PACKIT_TARGET_BRANCH"
@@ -28,55 +40,81 @@ if [[ -n "${PACKIT_TARGET_URL:-}" ]]; then
         git merge "pr/$PACKIT_SOURCE_BRANCH"
     fi
     git log --oneline -5
+
+    # Now prepare mkosi, possibly at the same version required by the systemd repo
+    mkosi_tree="${PWD}/../mkosi"
+    git clone https://github.com/systemd/mkosi.git "$mkosi_tree"
+    # If we have it, pin the mkosi version to the same one used by Github Actions, to ensure consistency
+    if [ -f .github/workflows/mkosi.yml ]; then
+        mkosi_hash="$(grep systemd/mkosi@ .github/workflows/mkosi.yml | sed "s|.*systemd/mkosi@||g")"
+        git -C "$mkosi_tree" checkout "$mkosi_hash"
+    fi
+    export PATH="${mkosi_tree}/bin:$PATH"
 else
     # If we're running outside of Packit, download SRPM for the currently installed build
     if ! dnf download --source "$(rpm -q systemd)"; then
         # If the build is recent enough it might not be on the mirrors yet, so try koji as well
         koji download-build --arch=src "$(rpm -q systemd --qf "%{sourcerpm}")"
     fi
-    dnf builddep --allowerasing -y ./systemd-*.src.rpm
+    dnf install --allowerasing -y mkosi
     rpmbuild --nodeps --define="_topdir $PWD" -rp ./systemd-*.src.rpm
     # Little hack to get to the correct directory without having to figure out
     # the exact name
     cd BUILD/*/test/../
-
-    # NO_BUILD=1 support for Fedora was introduced in v255
-    if ! grep -q "LOOKS_LIKE_FEDORA" test/test-functions; then
-        # Try to apply necessary patches before giving up completely
-        if ! curl -Ls https://github.com/systemd/systemd/commit/b54bc139ae91b417996ddc85585710ebf3324237.patch | git apply ||
-           ! curl -Ls https://github.com/systemd/systemd/commit/8ddbd9e07811e434fb24bc0d04812aae24fa78be.patch | git apply; then
-            echo "Source tree doesn't support NO_BUILD=1 on Fedora, skipping the tests"
-            exit 0
-        fi
-    fi
 fi
 
-# Temporarily build custom initrd with libkmod installed explicitly, as it became
-# a dlopen() dep
-# See: https://github.com/systemd/systemd/pull/31131
-export INITRD="$(mktemp /var/tmp/ci-XXX.initrd)"
-cp -fv "/boot/initramfs-$(uname -r).img" "$INITRD"
-dracut -f -v -a crypt --install /usr/lib64/libkmod.so.2 --rebuild "$INITRD"
+. /etc/os-release || . /usr/lib/os-release
 
-export DENY_LIST_MARKERS=fedora-skip
+tee mkosi.local.conf <<EOF
+[Output]
+Format=disk
+
+[Distribution]
+PackageManagerTrees=/etc/yum.repos.d/:/etc/yum.repos.d/
+${RELEASE:+"Release=${VERSION_CODENAME}"}
+
+[Build]
+Environment=NO_BUILD=1 ARTIFACT_DIRECTORY="${TMT_TEST_DATA:?}" TEST_SAVE_JOURNAL=fail TEST_SHOW_JOURNAL=warning
+Incremental=no
+
+[Host]
+RuntimeBuildSources=no
+EOF
+
+# Ensure packages built for this test have highest priority
+echo "priority=1" >> /etc/yum.repos.d/copr_build*
+
+# Disable mkosi's own repository logic
+touch /etc/yum.repos.d/mkosi.repo
+
+# TODO: drop once BTRFS regression is fixed in kernel 6.13
+sed -i "s/Format=btrfs/Format=ext4/" mkosi.repart/10-root.conf
+
+# If we don't have KVM, skip running in qemu, as it's too slow. But try to load the module first.
+modprobe kvm || true
+if [ ! -e /dev/kvm ]; then
+    export TEST_NO_KVM=1
+    export TEST_NO_QEMU=1
+fi
+
 # Skip TEST-64-UDEV-STORAGE for now, as it takes a really long time without KVM
-touch test/TEST-64-UDEV-STORAGE/fedora-skip
 # FIXME: screen 5.0.0 is FUBAR and break this test, re-enable once the issue is fixed
 # See: https://bugzilla.redhat.com/show_bug.cgi?id=2309284
-touch test/TEST-69-SHUTDOWN/fedora-skip
-
+export TEST_SKIP="TEST-64-UDEV-STORAGE TEST-69-SHUTDOWN"
 export ARTIFACT_DIRECTORY="${TMT_TEST_DATA:?}"
 export SPLIT_TEST_LOGS=1
 export TEST_SAVE_JOURNAL=fail
 export TEST_SHOW_JOURNAL=warning
-export TEST_REQUIRE_INSTALL_TESTS=0
-export TEST_PREFER_NSPAWN=1
-export TEST_NESTED_KVM=1
 export NO_BUILD=1
 export QEMU_TIMEOUT=1800
 export NSPAWN_TIMEOUT=1200
+export SYSTEMD_INTEGRATION_TESTS=1
 
-test/run-integration-tests.sh
+mkosi summary
+meson setup build -Dintegration-tests=true -Dtests=true
+mkosi --debug genkey
+cp mkosi.key mkosi.crt build
+meson compile -C build mkosi
+meson test -C build -v --no-rebuild --suite integration-tests --print-errorlogs --no-stdsplit
 
 popd
-rm -rf "$WORKDIR"
