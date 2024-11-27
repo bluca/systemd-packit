@@ -71,7 +71,7 @@ Format=disk
 
 [Distribution]
 PackageManagerTrees=/etc/yum.repos.d/:/etc/yum.repos.d/
-${RELEASE:+"Release=${VERSION_CODENAME}"}
+Release=${VERSION_ID:-rawhide}
 
 [Build]
 Environment=NO_BUILD=1 ARTIFACT_DIRECTORY="${TMT_TEST_DATA:?}" TEST_SAVE_JOURNAL=fail TEST_SHOW_JOURNAL=warning
