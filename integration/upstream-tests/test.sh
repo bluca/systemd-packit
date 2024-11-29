@@ -70,10 +70,10 @@ tee mkosi.local.conf <<EOF
 Format=disk
 
 [Distribution]
-PackageManagerTrees=/etc/yum.repos.d/:/etc/yum.repos.d/
 Release=${VERSION_ID:-rawhide}
 
 [Build]
+SandboxTrees=/etc/yum.repos.d/:/etc/yum.repos.d/
 Environment=NO_BUILD=1 ARTIFACT_DIRECTORY="${TMT_TEST_DATA:?}" TEST_SAVE_JOURNAL=fail TEST_SHOW_JOURNAL=warning
 Incremental=no
 
