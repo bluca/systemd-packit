@@ -54,7 +54,6 @@ require:
     - time
     - tpm2-tools
     - util-linux
-    - util-linux-script
     - veritysetup
     - wget
     - zstd
@@ -66,3 +65,4 @@ recommend:
     - systemd-networkd
     - systemd-oom-defaults
     - systemd-resolved
+    - util-linux-script
