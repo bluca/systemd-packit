@@ -74,7 +74,7 @@ Release=${VERSION_ID:-rawhide}
 
 [Build]
 SandboxTrees=/etc/yum.repos.d/:/etc/yum.repos.d/
-Environment=NO_BUILD=1 ARTIFACT_DIRECTORY="${TMT_TEST_DATA:?}" TEST_SAVE_JOURNAL=fail TEST_SHOW_JOURNAL=warning
+Environment=ARTIFACT_DIRECTORY="${TMT_TEST_DATA:?}" TEST_SAVE_JOURNAL=fail TEST_SHOW_JOURNAL=warning
 Incremental=no
 
 [Host]
@@ -105,7 +105,6 @@ export ARTIFACT_DIRECTORY="${TMT_TEST_DATA:?}"
 export SPLIT_TEST_LOGS=1
 export TEST_SAVE_JOURNAL=fail
 export TEST_SHOW_JOURNAL=warning
-export NO_BUILD=1
 export QEMU_TIMEOUT=1800
 export NSPAWN_TIMEOUT=1200
 export SYSTEMD_INTEGRATION_TESTS=1
