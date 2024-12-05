@@ -83,7 +83,7 @@ RuntimeBuildSources=no
 EOF
 
 # Ensure packages built for this test have highest priority
-echo "priority=1" >> /etc/yum.repos.d/copr_build*
+echo -e "\npriority=1" >> /etc/yum.repos.d/copr_build*
 
 # Disable mkosi's own repository logic
 touch /etc/yum.repos.d/mkosi.repo
